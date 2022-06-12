@@ -2,18 +2,54 @@
   <head>
     <title>JavaScript Line Chart</title>
     <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-base.min.js"></script>
+    <script id="myJson" type="application/json"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style type="text/css">      
       html, body, #container { 
         width: 100%; height: 100%; margin: 0; padding: 0; 
       } 
     </style>
   </head>
-  <body>  
+  <body>
+    <select id="dropbox">
+      <option>PPDU1</option>
+      <option>PPDU2</option>
+      <option>PPDU3</option>
+    </select>
     <div id="container"></div>
-    <script>
+    <script type="text/javascript">
+        // Set the global configs to synchronous 
+        $.ajaxSetup({
+    async: false
+});
       // All the code for the JS line chart will come here
-      const jsonData= fetch('./per-results.json');
-      console.log(jsonData);
+       function plotData() {
+        $.getJSON("per-results.json", function(json){
+          var data = json['HES-BW20-MCS1-GI08-X2-BCC'];
+          
+          // create a data set on our data
+          var dataSet = anychart.data.set(data);
+
+          // map data for the line chart,
+          // take x from the zero column and value from the first column
+          var seriesData = dataSet.mapAs({ x: 1, value: 0 });
+
+          // create a line chart
+          var chart = anychart.line();
+
+          // create a line series with the mapped data
+          var lineChart = chart.line(seriesData);
+
+          // set the container id for the line chart
+          chart.container('container');
+
+          // draw the line chart
+          chart.draw();
+      });
+      }
+      plotData();
+
+      
     </script>
   </body>
 </html>
